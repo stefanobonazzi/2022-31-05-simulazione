@@ -6,9 +6,59 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.javadocmd.simplelatlng.LatLng;
+
+import it.polito.tdp.nyc.model.City;
 import it.polito.tdp.nyc.model.Hotspot;
 
 public class NYCDao {
+	
+	public List<String> getProviders() {
+		String sql = "SELECT DISTINCT Provider "
+				+ "FROM nyc_wifi_hotspot_locations "
+				+ "ORDER BY Provider";
+		Connection conn = DBConnect.getConnection();
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			List<String> result = new ArrayList<String>();
+			while(res.next()) {
+				result.add(res.getString("Provider"));
+			}
+			conn.close();
+			return result ;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<City> getCities(String provider) {
+		String sql = "SELECT DISTINCT City, AVG(Latitude) AS Lat, AVG(Longitude) AS Lng "
+				+ "FROM nyc_wifi_hotspot_locations "
+				+ "WHERE Provider= ? "
+				+ "GROUP BY City "
+				+ "ORDER BY City";
+		
+		Connection conn = DBConnect.getConnection();
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, provider);
+			ResultSet res = st.executeQuery() ;
+			List<City> result = new ArrayList<City>() ;
+			while(res.next()) {
+				result.add(new City( res.getString("City"),
+						new LatLng(res.getDouble("Lat"), res.getDouble("Lng"))
+						));
+			}
+			conn.close();
+			return result;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	public List<Hotspot> getAllHotspot(){
 		String sql = "SELECT * FROM nyc_wifi_hotspot_locations";

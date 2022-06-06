@@ -35,7 +35,7 @@ public class NYCDao {
 	}
 	
 	public List<City> getCities(String provider) {
-		String sql = "SELECT DISTINCT City, AVG(Latitude) AS Lat, AVG(Longitude) AS Lng "
+		String sql = "SELECT DISTINCT City, AVG(Latitude) AS Lat, AVG(Longitude) AS Lng, COUNT(*) AS NUM "
 				+ "FROM nyc_wifi_hotspot_locations "
 				+ "WHERE Provider= ? "
 				+ "GROUP BY City "
@@ -49,7 +49,8 @@ public class NYCDao {
 			List<City> result = new ArrayList<City>() ;
 			while(res.next()) {
 				result.add(new City( res.getString("City"),
-						new LatLng(res.getDouble("Lat"), res.getDouble("Lng"))
+						new LatLng(res.getDouble("Lat"), res.getDouble("Lng")),
+						res.getInt("NUM")
 						));
 			}
 			conn.close();

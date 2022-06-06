@@ -6,11 +6,13 @@ public class City {
 	
 	private String nome ;
 	private LatLng posizione ;
+	private int nHotSpot;
 	
-	public City(String nome, LatLng posizione) {
+	public City(String nome, LatLng posizione, int nHotSpot) {
 		super();
 		this.nome = nome;
 		this.posizione = posizione;
+		this.nHotSpot = nHotSpot;
 	}
 	public String getNome() {
 		return nome;
@@ -50,6 +52,12 @@ public class City {
 	@Override
 	public String toString() {
 		return nome ;
+	}
+	public int getnHotSpot() {
+		return nHotSpot;
+	}
+	public void setnHotSpot(int nHotSpot) {
+		this.nHotSpot = nHotSpot;
 	}
 	
 	

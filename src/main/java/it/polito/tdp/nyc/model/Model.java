@@ -22,6 +22,10 @@ public class Model {
 
 	private Graph<City, DefaultWeightedEdge> grafo ;
 	
+	// risultati simulazione
+	private int durata;
+	private List<Integer> revisionati;
+	
 	public List<String> getProviders() {
 		if(this.providers==null) {
 			NYCDao dao = new NYCDao();
@@ -72,6 +76,22 @@ public class Model {
 		});
 		
 		return result ;
+	}
+	
+	public void simula(City scelto, int N) {
+		Simulator sim = new Simulator(this.grafo, this.cities);
+		sim.init(scelto, N);
+		sim.run();
+		this.durata = sim.getDurata();
+		this.revisionati = sim.getRevisionati();
+	}
+
+	public int getDurata() {
+		return durata;
+	}
+
+	public List<Integer> getRevisionati() {
+		return revisionati;
 	}
 	
 }

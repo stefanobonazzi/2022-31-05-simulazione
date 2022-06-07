@@ -98,7 +98,25 @@ public class FXMLController {
 
     @FXML
     void doSimula(ActionEvent event) {
+    	
+    	City scelto = cmbQuartiere.getValue();
+    	if(scelto==null) {
+    		txtResult.appendText("Errore: seleziona un quartiere\n");
+    		return;
+    	}
 
+    	int N = 0;
+    	try {
+    		N = Integer.parseInt(txtMemoria.getText());
+    	} catch(NumberFormatException ex) {
+    		txtResult.appendText("Errore: inserire un numero valido\n");
+    		return;
+    	}
+    	
+    	model.simula(scelto, N);
+    	
+    	txtResult.appendText("Durata simulazione: "+model.getDurata()+" minuti\n");
+    	txtResult.appendText("Impegni dei tecnici: "+model.getRevisionati()+"\n");
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

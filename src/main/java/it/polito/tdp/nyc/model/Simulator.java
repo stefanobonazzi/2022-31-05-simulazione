@@ -57,6 +57,9 @@ public class Simulator {
 		this.hotSpotRimanenti = this.currentCity.getnHotSpot();
 		this.tecniciOccupati = 0;
 		
+		// crea la coda
+		this.queue = new PriorityQueue<>();
+		
 		// caricamento iniziale della coda
 		int i = 0;
 		while(this.tecniciOccupati<this.N && this.hotSpotRimanenti>0) {
@@ -64,6 +67,7 @@ public class Simulator {
 			queue.add(new Event( 0, EventType.INIZIO_HS, i )) ;
 			this.tecniciOccupati++ ;
 			this.hotSpotRimanenti--;
+			i++;
 		}
 		
 	}
@@ -130,6 +134,7 @@ public class Simulator {
 				queue.add(new Event( time, EventType.INIZIO_HS, i )) ;
 				this.tecniciOccupati++ ;
 				this.hotSpotRimanenti--;
+				i++;
 			}
 
 			break;

@@ -5,8 +5,12 @@
 package it.polito.tdp.nyc;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
+import it.polito.tdp.nyc.model.Adiacenza;
 import it.polito.tdp.nyc.model.Model;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,6 +19,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class FXMLController {
 	
@@ -39,7 +44,7 @@ public class FXMLController {
     private ComboBox<String> cmbProvider; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbQuartiere"
-    private ComboBox<?> cmbQuartiere; // Value injected by FXMLLoader
+    private ComboBox<String> cmbQuartiere; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtMemoria"
     private TextField txtMemoria; // Value injected by FXMLLoader
@@ -48,27 +53,67 @@ public class FXMLController {
     private TextArea txtResult; // Value injected by FXMLLoader
     
     @FXML // fx:id="clQuartiere"
-    private TableColumn<?, ?> clQuartiere; // Value injected by FXMLLoader
+    private TableColumn<Adiacenza, String> clQuartiere; // Value injected by FXMLLoader
  
     @FXML // fx:id="clDistanza"
-    private TableColumn<?, ?> clDistanza; // Value injected by FXMLLoader
+    private TableColumn<Adiacenza, Double> clDistanza; // Value injected by FXMLLoader
     
     @FXML // fx:id="tblQuartieri"
-    private TableView<?> tblQuartieri; // Value injected by FXMLLoader
+    private TableView<Adiacenza> tblQuartieri; // Value injected by FXMLLoader
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	String p = this.cmbProvider.getValue();
+    	if(p == null) {
+    		this.txtResult.setText("Seleziona un provider!");
+    		return;
+    	}
     	
+    	String s = this.model.creaGrafo(p);
+    	this.txtResult.setText(s);
+    	List<String> cities = this.model.getVertices();
+    	this.cmbQuartiere.getItems().clear();
+    	this.cmbQuartiere.getItems().addAll(cities);
+    	this.tblQuartieri.getItems().clear();
     }
 
     @FXML
     void doQuartieriAdiacenti(ActionEvent event) {
+    	String q = this.cmbQuartiere.getValue();
+    	if(q == null) {
+    		this.txtResult.setText("Seleziona un quartiere!");
+    		return;
+    	}
     	
+    	List<Adiacenza> adiacenze = this.model.quartieriAdiacenti(q);
+    	Collections.sort(adiacenze);
+    	this.tblQuartieri.setItems(FXCollections.observableArrayList(adiacenze));
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+    	String p = this.cmbProvider.getValue();
+    	if(p == null) {
+    		this.txtResult.setText("Seleziona un provider!");
+    		return;
+    	}
+    	
+    	String q = this.cmbQuartiere.getValue();
+    	if(q == null) {
+    		this.txtResult.setText("Seleziona un quartiere!");
+    		return;
+    	}
+    	
+    	int n;
+    	try {
+			n = Integer.parseInt(this.txtMemoria.getText());
+		} catch (Exception e) {
+			this.txtResult.setText("Inserisci un valore intero per n!");
+    		return;
+		}
+    	
+    	String res = this.model.simula(p, q, n);
+    	this.txtResult.setText(res);	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -83,10 +128,14 @@ public class FXMLController {
         assert clDistanza != null : "fx:id=\"clDistanza\" was not injected: check your FXML file 'Scene.fxml'.";
         assert clQuartiere != null : "fx:id=\"clQuartiere\" was not injected: check your FXML file 'Scene.fxml'.";
 
+        this.clQuartiere.setCellValueFactory(new PropertyValueFactory<Adiacenza, String>("city"));
+        this.clDistanza.setCellValueFactory(new PropertyValueFactory<Adiacenza, Double>("distanza"));
     }
     
     public void setModel(Model model) {
     	this.model = model;
+    	List<String> providers = this.model.getProviders();
+    	this.cmbProvider.getItems().addAll(providers);
     }
 
 }
